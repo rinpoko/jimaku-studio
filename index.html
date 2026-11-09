@@ -68,6 +68,7 @@
     <div class="player-col">
       <div class="player" id="player">
         <video id="video" controls playsinline preload="metadata"></video>
+        <div class="scr-layer" id="scr-layer"></div>
         <div class="cue" id="cue"><span id="cue-main"></span><span id="cue-sub"></span></div>
         <div class="nofile" id="nofile" hidden>
           <p>この動画ファイルを再生するには、もう一度選んでください。</p>
@@ -83,6 +84,7 @@
         </div>
         <label class="mini">文字サイズ <input type="range" id="fs" min="0.035" max="0.09" step="0.005" value="0.055"></label>
         <label class="mini"><input type="checkbox" id="box"> 背景帯</label>
+        <label class="mini" title="画面に出る外国語の文字（タイトル・コピー等）の訳を、原文の近くに表示"><input type="checkbox" id="show-screen" checked> 画面の文字の訳</label>
       </div>
 
       <div class="card export">
@@ -91,9 +93,10 @@
           <button class="btn primary" id="ex-burn">字幕入り動画（MP4）</button>
           <button class="btn" id="dl-srt">SRT</button>
           <button class="btn" id="dl-vtt">VTT</button>
+          <button class="btn" id="ex-screen" hidden>画面の文字も翻訳</button>
           <button class="btn ghost" id="redo">作り直す</button>
         </div>
-        <p class="hint">字幕入り動画は、このブラウザの中で作ります（動画は外部に送りません）。表示モード・文字サイズ・背景帯の設定が反映されます。長い動画は時間がかかります。</p>
+        <p class="hint">字幕入り動画は、このブラウザの中で作ります（動画は外部に送りません）。表示モード・文字サイズ・背景帯・画面の文字の訳の設定が反映されます。長い動画は時間がかかります。</p>
         <div id="ex-status" class="ex-status" hidden></div>
       </div>
     </div>
@@ -144,6 +147,9 @@
         </select>
       </label>
     </div>
+    <label class="check"><input type="checkbox" id="s-screen" checked>
+      <span>画面に大きく出る外国語の文字（タイトル・キャッチコピー・テロップ）も翻訳する<br>
+      <span class="muted small">PV・MV・CM向け。絵が変わった場面の画像をGeminiに送るため、回数を少し多く使います。</span></span></label>
     <p class="note">⚠ Gemini APIの無料枠では、送った音声や文章がGoogleのサービス改善に使われることがあります。人に見せたくない動画には使わないでください。</p>
     <div class="dlg-foot">
       <button class="btn" value="cancel">閉じる</button>

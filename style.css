@@ -165,3 +165,17 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 .dlg-foot{display:flex;justify-content:flex-end;gap:8px}
 .ok-msg{color:var(--ok)}.err-msg{color:var(--accent)}
 @media (max-width:600px){.dlg .two{grid-template-columns:1fr}.hero h1{font-size:24px}}
+
+/* 画面の文字の訳 */
+.scr-layer{position:absolute;pointer-events:none}
+.scr{position:absolute;transform:translateX(-50%);max-width:62%;width:max-content;
+  background:rgba(0,0,0,.6);color:#fff;font-weight:700;line-height:1.3;text-align:center;
+  padding:.18em .6em;border-radius:.3em;border-left:.16em solid #ffd84d;
+  text-wrap:balance;line-break:strict;overflow-wrap:anywhere}
+.scr.above{transform:translate(-50%,-100%)}
+.item .tag{font-size:10px;font-weight:700;padding:0 7px;border-radius:10px;background:#ffd84d40;color:#8a6400}
+.item.scr-item{border-left:3px solid #ffd84d;border-radius:4px 10px 10px 4px}
+.item.scr-on{background:color-mix(in srgb,#ffd84d 14%,var(--panel))}
+.dlg label.check{flex-direction:row;align-items:flex-start;gap:8px;font-weight:600}
+.dlg label.check input{margin-top:3px}
+@media (prefers-color-scheme:dark){.item .tag{color:#ffd84d}}

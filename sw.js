@@ -1,5 +1,5 @@
 // オフラインでもアプリを起動できるよう、アプリ本体だけをキャッシュする（動画・音声・APIは対象外）
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = "jimaku-studio-" + VERSION;
 const ASSETS = [
   "./", "index.html", "style.css", "app.js", "manifest.webmanifest",
