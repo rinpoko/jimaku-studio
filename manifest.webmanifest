@@ -1,0 +1,22 @@
+{
+  "name": "字幕スタジオ",
+  "short_name": "字幕スタジオ",
+  "description": "動画の音声をAIで聞き取り、日本語字幕をつけるアプリ",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#f6f5f2",
+  "theme_color": "#d6452b",
+  "lang": "ja",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "file_handlers": [
+    {"action": "./", "accept": {"video/mp4": [".mp4", ".m4v"], "video/quicktime": [".mov"], "video/webm": [".webm"], "video/x-matroska": [".mkv"]}}
+  ],
+  "launch_handler": {"client_mode": "focus-existing"}
+}

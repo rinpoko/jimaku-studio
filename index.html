@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>字幕スタジオ</title>
+<meta name="description" content="動画の音声をAIで聞き取り、日本語字幕をつけるWebアプリ">
+<meta name="theme-color" content="#d6452b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a href="#" class="brand"><img src="icons/icon-192.png" alt="" class="logo">字幕スタジオ</a>
+  <div class="top-r">
+    <button id="install" class="btn ghost sm" hidden>アプリとしてインストール</button>
+    <button id="open-settings" class="btn sm">⚙ 設定</button>
+  </div>
+</header>
+
+<!-- ホーム -->
+<main id="home" class="view">
+  <section class="hero">
+    <h1>動画に、日本語字幕を。</h1>
+    <p>動画を選ぶと、Googleの AI（Gemini）が音声を聞き取って日本語に翻訳し、話しているタイミングに合わせて字幕をのせます。動画そのものはアップロードせず、音声だけを送ります。</p>
+  </section>
+
+  <div id="need-key" class="banner" hidden>
+    <div><strong>はじめに Gemini の APIキーを設定してください</strong><br>
+      <span class="muted">Google AI Studio で無料で発行できます（クレジットカード不要）。</span></div>
+    <button class="btn primary" id="need-key-btn">APIキーを設定</button>
+  </div>
+
+  <section class="drop" id="drop" tabindex="0" role="button" aria-label="動画を選択">
+    <input type="file" id="file" accept="video/*,.mkv,.mov,.m4v,.webm" hidden>
+    <div class="drop-icon">⬆</div>
+    <div class="drop-title">動画をドラッグ＆ドロップ</div>
+    <div class="drop-sub">またはクリックしてファイルを選択</div>
+  </section>
+
+  <section>
+    <h2 class="sec">これまでの動画</h2>
+    <div id="jobs" class="jobs"></div>
+  </section>
+</main>
+
+<!-- エディタ -->
+<main id="editor" class="view" hidden>
+  <div class="ed-head">
+    <a href="#" class="back">← 一覧へ</a>
+    <h1 id="ed-title"></h1>
+    <span id="ed-meta" class="muted"></span>
+  </div>
+
+  <div id="ed-progress" class="card progress-card" hidden>
+    <div class="pc-label"><span id="pc-label"></span><span id="pc-pct"></span></div>
+    <div class="bar"><div id="pc-bar"></div></div>
+    <div class="pc-foot"><span id="pc-note" class="muted"></span>
+      <span class="pc-actions">
+        <button class="btn sm" id="pause" hidden>一時停止</button>
+        <button class="btn primary sm" id="resume" hidden>再開</button>
+      </span></div>
+  </div>
+
+  <div class="ed-grid">
+    <div class="player-col">
+      <div class="player" id="player">
+        <video id="video" controls playsinline preload="metadata"></video>
+        <div class="cue" id="cue"><span id="cue-main"></span><span id="cue-sub"></span></div>
+        <div class="nofile" id="nofile" hidden>
+          <p>この動画ファイルを再生するには、もう一度選んでください。</p>
+          <button class="btn primary" id="relink">動画ファイルを選ぶ</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="字幕の表示">
+          <button data-mode="ja">日本語</button>
+          <button data-mode="both">日本語＋原文</button>
+          <button data-mode="orig">原文</button>
+        </div>
+        <label class="mini">文字サイズ <input type="range" id="fs" min="0.035" max="0.09" step="0.005" value="0.055"></label>
+        <label class="mini"><input type="checkbox" id="box"> 背景帯</label>
+      </div>
+
+      <div class="card export">
+        <h3>書き出し</h3>
+        <div class="ex-row">
+          <button class="btn primary" id="ex-burn">字幕入り動画（MP4）</button>
+          <button class="btn" id="dl-srt">SRT</button>
+          <button class="btn" id="dl-vtt">VTT</button>
+          <button class="btn ghost" id="redo">作り直す</button>
+        </div>
+        <p class="hint">字幕入り動画は、このブラウザの中で作ります（動画は外部に送りません）。表示モード・文字サイズ・背景帯の設定が反映されます。長い動画は時間がかかります。</p>
+        <div id="ex-status" class="ex-status" hidden></div>
+      </div>
+    </div>
+
+    <aside class="card list-col">
+      <div class="list-head">
+        <strong>字幕</strong><span id="cnt" class="muted"></span>
+        <label class="mini follow"><input type="checkbox" id="follow" checked> 自動スクロール</label>
+        <span id="saved" class="muted saved"></span>
+      </div>
+      <div id="list" class="list"></div>
+    </aside>
+  </div>
+</main>
+
+<!-- 設定 -->
+<dialog id="settings">
+  <form method="dialog" class="dlg">
+    <h2>設定</h2>
+    <label>Gemini APIキー
+      <span class="row">
+        <input id="s-key" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…">
+        <button type="button" class="btn" id="s-check">確認</button>
+      </span>
+      <span class="muted small"><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> で「APIキーを作成」→ ここに貼り付け。キーはこの端末のブラウザ内だけに保存され、Google以外には送られません。</span>
+    </label>
+    <div id="s-check-msg" class="small"></div>
+    <label>AIモデル
+      <select id="s-model"></select>
+      <span class="muted small">Flash-Lite は1日に使える回数が多く、長い動画向き。Flash は高精度ですが無料枠の回数が少なめです。</span>
+    </label>
+    <div class="two">
+      <label>話されている言語
+        <select id="s-lang">
+          <option value="auto">自動判定</option>
+          <option value="en">英語</option><option value="zh">中国語</option><option value="ko">韓国語</option>
+          <option value="es">スペイン語</option><option value="fr">フランス語</option><option value="de">ドイツ語</option>
+          <option value="it">イタリア語</option><option value="pt">ポルトガル語</option><option value="ru">ロシア語</option>
+          <option value="th">タイ語</option><option value="vi">ベトナム語</option><option value="id">インドネシア語</option>
+          <option value="ja">日本語</option>
+        </select>
+      </label>
+      <label>1回に送る長さ
+        <select id="s-chunk">
+          <option value="180">3分（タイミング精度◎・回数多め）</option>
+          <option value="300">5分（おすすめ）</option>
+          <option value="600">10分（回数少なめ）</option>
+        </select>
+      </label>
+    </div>
+    <p class="note">⚠ Gemini APIの無料枠では、送った音声や文章がGoogleのサービス改善に使われることがあります。人に見せたくない動画には使わないでください。</p>
+    <div class="dlg-foot">
+      <button class="btn" value="cancel">閉じる</button>
+      <button class="btn primary" id="s-save" value="save">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
